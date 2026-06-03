@@ -24,6 +24,11 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "OLED.h"
+#include "stm32f1xx_hal_adc.h"
+#include "stm32f1xx_hal_adc_ex.h"
+#include "stm32f1xx_hal_def.h"
+#include <math.h>
+#include <stdint.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,7 +49,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint16_t ADCValue = 0;
+float_t Voltage = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -91,15 +97,27 @@ int main(void)
   /* USER CODE BEGIN 2 */
   OLED_Init();
   OLED_Clear();
+
+  HAL_ADCEx_Calibration_Start(&hadc1);
+
+  OLED_ShowString(1, 1, "ADCValue = xxxx");
+  OLED_ShowString(2, 1, "Voltage  = 0.00V");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-      OLED_ShowString(2, 1, "bobo chuchu =3=");
-      HAL_Delay(1000);
+    HAL_ADC_Start(&hadc1);
+    HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+    ADCValue = HAL_ADC_GetValue(&hadc1);
+    Voltage = (float)ADCValue/4095.0*3.3;
 
+    OLED_ShowNum(1, 12, ADCValue, 4);
+    OLED_ShowNum(2, 12, ceil(Voltage), 1);
+    OLED_ShowNum(2, 14, ((uint16_t)(Voltage*100))%100, 2);
+    
+    HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
