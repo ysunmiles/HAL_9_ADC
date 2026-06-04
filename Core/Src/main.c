@@ -53,7 +53,7 @@
 uint16_t ADCValue = 0;
 float_t Voltage = 0;
 
-uint8_t WDG_Flag = 0;
+volatile uint8_t WDG_Flag = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -193,7 +193,7 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-void HAL_ADC_LevelOutOfWindOLED_ShowString(3, 1, char *String)owCallback(ADC_HandleTypeDef* hadc)
+void HAL_ADC_LevelOutOfWindowCallback(ADC_HandleTypeDef* hadc)
 {
   if (hadc->Instance == ADC1)
   {
@@ -205,12 +205,13 @@ void HAL_ADC_LevelOutOfWindOLED_ShowString(3, 1, char *String)owCallback(ADC_Han
     {
       WDG_Flag = 1;
     }
-    else if (value < low) 
+    else if (value < low)
     {
       WDG_Flag = 2;
     }
-  } 
+  }
 }
+
 /* USER CODE END 4 */
 
 /**
