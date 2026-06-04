@@ -58,7 +58,7 @@ void MX_ADC1_Init(void)
   /** Configure Analog WatchDog 1
   */
   AnalogWDGConfig.WatchdogMode = ADC_ANALOGWATCHDOG_SINGLE_REG;
-  AnalogWDGConfig.HighThreshold = 3000;
+  AnalogWDGConfig.HighThreshold = 4095;
   AnalogWDGConfig.LowThreshold = 1000;
   AnalogWDGConfig.Channel = ADC_CHANNEL_6;
   AnalogWDGConfig.ITMode = ENABLE;

@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "OLED.h"
 #include "stm32f103xb.h"
+#include "stm32f1xx_hal.h"
 #include "stm32f1xx_hal_adc.h"
 #include "stm32f1xx_hal_adc_ex.h"
 #include "stm32f1xx_hal_def.h"
@@ -102,7 +103,6 @@ int main(void)
   OLED_Clear();
 
   HAL_ADCEx_Calibration_Start(&hadc1);
-  HAL_ADC_Start(&hadc1);
 
   OLED_ShowString(1, 1, "ADCValue = xxxx");
   OLED_ShowString(2, 1, "Voltage  = 0.00V");
@@ -120,19 +120,13 @@ int main(void)
     OLED_ShowNum(1, 12, ADCValue, 4);
     OLED_ShowNum(2, 12, ceil(Voltage), 1);
     OLED_ShowNum(2, 14, ((uint16_t)(Voltage*100))%100, 2);
-
-    if (WDG_Flag == 0) {
+    if (WDG_Flag == 0)
+    {
       OLED_ShowString(3, 1, "                ");
-      OLED_ShowString(4, 1, "                ");
     }
     else if (WDG_Flag == 1)
     {
-      OLED_ShowString(3, 1, "WDG: over high");
-      WDG_Flag = 0;
-    }
-    else if (WDG_Flag == 2) 
-    {
-      OLED_ShowString(4, 1, "WDG: under low");
+      OLED_ShowString(3, 1, "Below Threshold");
       WDG_Flag = 0;
     }
     
@@ -197,19 +191,8 @@ void HAL_ADC_LevelOutOfWindowCallback(ADC_HandleTypeDef* hadc)
 {
   if (hadc->Instance == ADC1)
   {
-    uint32_t value = HAL_ADC_GetValue(hadc);
-    uint32_t high  = hadc->Instance->HTR & ADC_HTR_HT;
-    uint32_t low   = hadc->Instance->LTR & ADC_LTR_LT;
-
-    if (value > high)
-    {
-      WDG_Flag = 1;
-    }
-    else if (value < low)
-    {
-      WDG_Flag = 2;
-    }
-  }
+    WDG_Flag = 1;
+  } 
 }
 
 /* USER CODE END 4 */
