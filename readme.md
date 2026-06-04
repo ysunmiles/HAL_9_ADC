@@ -13,6 +13,12 @@
 - 计算 12 位 ADC 采样值对应的电压（参考电压 3.3V）
 - 通过软件 I2C 驱动 OLED 显示采集结果
 
+## 注意事项
+
+- 本项目默认使用 `HAL_ADC_PollForConversion()` 进行 ADC 轮询读取。
+- 如果启用 ADC 模拟看门狗中断（`ADC_IT_AWD`），不要在看门狗回调中直接调用 `HAL_ADC_GetValue()`，否则会读取 `DR` 并清除 `EOC`，可能导致轮询等待失败。
+- 对于看门狗中断，应选择中断方式 `HAL_ADC_Start_IT()` 或关闭 AWD 中断，避免轮询与中断逻辑冲突。
+
 ## 关键文件
 
 - `CMakeLists.txt`：项目根 CMake 构建脚本
